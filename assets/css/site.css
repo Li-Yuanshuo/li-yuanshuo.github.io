@@ -14,7 +14,6 @@ body{
   line-height: 1.6;
 }
 
-/* 通用内容容器（只影响左侧） */
 .wrap{
   max-width: var(--max);
   margin: 0 auto;
@@ -29,7 +28,7 @@ body{
   border-bottom: 1px solid var(--border);
 }
 
-/* 背景图（你本身已模糊，不再额外处理） */
+/* 背景图：不额外 blur */
 .banner-bg{
   position: absolute;
   inset: 0;
@@ -90,7 +89,7 @@ body{
   border: 0;
 }
 
-/* ========== 右侧：严格占据视口右半 50vw ========== */
+/* ========== 右侧：永远占据视口右半 50vw ========== */
 .banner-right{
   position: absolute;
   z-index: 2;
@@ -104,7 +103,7 @@ body{
   padding: 0 28px;
   color: var(--white);
 
-  /* ⭐ 关键：声明为容器，供 container query 使用 */
+  /* 容器查询：以右半区宽度为基准 */
   container-type: inline-size;
 }
 
@@ -113,88 +112,45 @@ body{
   max-width: 760px;
 }
 
-/* --- 流体字体（基础） --- */
+/* 基础流体字体（即使不支持 container query 也能缩放） */
 .intro h1{
   margin: 0 0 10px;
   font-weight: 700;
   letter-spacing: -0.01em;
-
-  /* 先用 clamp 做基础流体 */
-  font-size: clamp(20px, 2.2vw, 30px);
+  font-size: clamp(16px, 2.2cqi, 30px); /* cqi=容器宽度单位，支持则更准确 */
   line-height: 1.15;
 }
 
 .intro p{
   margin: 0;
   color: rgba(255,255,255,.92);
-
-  font-size: clamp(13px, 1.25vw, 16px);
+  font-size: clamp(11px, 1.25cqi, 16px);
   line-height: 1.55;
 
-  /* ⭐ 最多 3 行，防止撑高 banner */
+  /* 最多 3 行 */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* ========== Container Queries：只根据右半区宽度缩放 ========== */
-
-/* 右半区 <= 520px */
-@container (max-width: 520px){
-  .intro h1{
-    font-size: 20px;
-  }
-  .intro p{
-    font-size: 13px;
-  }
+/* ========== Container Queries：右半区越窄，字号越小 ========== */
+@container (max-width: 560px){
+  .intro h1{ font-size: 22px; }
+  .intro p{ font-size: 13px; }
 }
 
-/* 右半区 <= 420px */
-@container (max-width: 420px){
-  .intro h1{
-    font-size: 18px;
-  }
-  .intro p{
-    font-size: 12px;
-  }
+@container (max-width: 460px){
+  .intro h1{ font-size: 20px; }
+  .intro p{ font-size: 12px; }
 }
 
-/* ========== Mobile ========== */
-@media (max-width: 20px){
-  .banner{
-    height: clamp(240px, 42vw, 420px);
-  }
+@container (max-width: 380px){
+  .intro h1{ font-size: 18px; }
+  .intro p{ font-size: 11px; }
+}
 
-  /* 手机端取消右半固定布局 */
-  .banner-right{
-    position: relative;
-    left: auto;
-    width: auto;
-    height: auto;
-    padding: 10px 0 0;
-    container-type: normal;
-  }
-
-  .banner-left{
-    align-items: flex-start;
-    padding-top: 16px;
-  }
-
-  .contact{
-    flex-direction: row;
-    gap: 10px;
-  }
-
-  .intro{
-    max-width: 100%;
-  }
-
-  .intro h1{
-    font-size: 24px;
-  }
-
-  .intro p{
-    -webkit-line-clamp: unset; /* 手机端不截断 */
-  }
+@container (max-width: 320px){
+  .intro h1{ font-size: 16px; }
+  .intro p{ font-size: 10.5px; }
 }

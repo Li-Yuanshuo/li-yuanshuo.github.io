@@ -161,7 +161,7 @@ body{
 }
 
 /* ========== Mobile ========== */
-@media (max-width: 720px){
+@media (max-width: 20px){
   .banner{
     height: clamp(240px, 42vw, 420px);
   }

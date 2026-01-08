@@ -1,14 +1,27 @@
 :root{
   --max: 1100px;
   --border: #e6e6e6;
+
+  /* 可选：你以后想统一调颜色就在这里改 */
+  --text: #111;
+  --white: #fff;
 }
 
+/* 全局基础 */
 *{ box-sizing: border-box; }
+
 body{
   margin: 0;
-  font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: #111;
+  color: var(--text);
+
+  /* 方案 A：系统字体栈（稳定、无需外部加载） */
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+               "Apple Color Emoji","Segoe UI Emoji";
+  font-size: 16px;
+  line-height: 1.6;
 }
+
+a{ color: inherit; text-underline-offset: 3px; }
 
 .wrap{
   max-width: var(--max);
@@ -16,7 +29,7 @@ body{
   padding: 0 18px;
 }
 
-/* Banner */
+/* ========== Banner ========== */
 .banner{
   position: relative;
   height: clamp(220px, 28vw, 360px);
@@ -24,51 +37,96 @@ body{
   border-bottom: 1px solid var(--border);
 }
 
+/* 背景层：你的图片本身已模糊，所以不额外 blur */
 .banner-bg{
   position: absolute;
   inset: 0;
+
+  /* ✅ 确认你的背景文件名与路径一致 */
   background-image: url("/assets/img/banner.webp");
   background-size: cover;
+
+  /* ✅ 用锚点控制构图（可微调数值） */
   background-position: 60% 40%;
-  filter: blur(18px) brightness(0.92);
-  transform: scale(1.08);
+
+  /* 不做额外模糊 */
+  filter: none;
+  transform: none;
 }
 
-/* 前景内容 */
+/* 前景内容层 */
 .banner-content{
   position: relative;
   z-index: 2;
   height: 100%;
   display: grid;
-  grid-template-columns: 160px 1fr;
-  gap: 18px;
+
+  /* ✅ 让 About me 从页面左右“中间”开始：左列变宽一些 */
+  grid-template-columns: 220px 1fr;
+
+  gap: 22px;
   align-items: center;
-  color: #fff;
+
+  /* ✅ 垂直方向更居中（对你截图那种效果很有用） */
+  align-content: center;
+
+  color: var(--white);
 }
 
-.contact a{
-  display: block;
-  margin: 6px 0;
-  color: #fff;
+/* 联系方式（图标 + 文本） */
+.iconlink{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 10px 0;
+  color: var(--white);
   text-decoration: none;
-}
-.contact a:hover{ text-decoration: underline; }
 
-.intro h1{
-  margin: 0 0 8px;
-  font-size: 22px;
+  /* 让点击区域更舒服一点 */
+  padding: 2px 0;
 }
+
+.iconlink svg{
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  opacity: .95;
+}
+
+.iconlink:hover{
+  text-decoration: underline;
+}
+
+/* About me 文案 */
+.intro h1{
+  margin: 0 0 10px;
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+
 .intro p{
   margin: 0;
-  max-width: 720px;
+  max-width: 760px;
   color: rgba(255,255,255,.92);
+  font-size: 16px;
 }
 
-/* 移动端 */
+/* 移动端：改为上下布局 */
 @media (max-width: 720px){
+  .banner{
+    height: clamp(240px, 42vw, 420px);
+  }
+
   .banner-content{
     grid-template-columns: 1fr;
+    gap: 12px;
     padding-top: 16px;
     align-content: start;
+  }
+
+  .intro h1{
+    font-size: 24px;
   }
 }

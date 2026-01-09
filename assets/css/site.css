@@ -144,20 +144,3 @@ body{
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
-/* ========== Container Queries：右半区越窄，字号越小 ========== */
-@container (max-width: 1000px){
-  .intro p{ font-size: 13px; }
-}
-
-@container (max-width: 460px){
-  .intro p{ font-size: 12px; }
-}
-
-@container (max-width: 380px){
-  .intro p{ font-size: 11px; }
-}
-
-@container (max-width: 320px){
-  .intro p{ font-size: 10.5px; }
-}

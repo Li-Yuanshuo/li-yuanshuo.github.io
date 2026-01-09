@@ -110,6 +110,13 @@ body{
   }
 }
 
+@media (max-width: 768px){
+  .banner-right{
+    left: 40vw;
+    width: 60vw;
+  }
+}
+
 .banner-right::before{
   content: "";
   position: absolute;

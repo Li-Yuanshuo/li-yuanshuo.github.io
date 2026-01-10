@@ -160,24 +160,10 @@ layout: none
 
   let currentIndex = 0;
 
-  const getSlidesPerView = () => {
-    if (window.innerWidth <= 640) {
-      return 1;
-    }
-    if (window.innerWidth <= 900) {
-      return 2;
-    }
-    return 3;
-  };
-
   const updateCarousel = (index) => {
-    const slidesPerView = getSlidesPerView();
-    const maxIndex = Math.max(0, slides.length - slidesPerView);
-    currentIndex = ((index % (maxIndex + 1)) + (maxIndex + 1)) % (maxIndex + 1);
-    const slideWidth = slides[0].getBoundingClientRect().width;
-    track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+    currentIndex = (index + slides.length) % slides.length;
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
     dots.forEach((dot, idx) => {
-      dot.hidden = idx > maxIndex;
       dot.classList.toggle("is-active", idx === currentIndex);
     });
   };
@@ -200,7 +186,6 @@ layout: none
     });
   });
 
-  window.addEventListener("resize", () => updateCarousel(currentIndex));
   updateCarousel(0);
 </script>
 

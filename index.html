@@ -61,75 +61,46 @@ layout: none
 <!-- Carousel gallery with navigation and preview -->
 <section class="carousel-section">
   <div class="wrap">
-    <!-- Carousel heading copy -->
-    <header class="carousel-header">
-      <h2>Featured Gallery</h2>
-      <p>Seven snapshots highlighting recent visual stories.</p>
-    </header>
-
     <div class="carousel" data-carousel>
-      <!-- Previous control -->
       <button class="carousel__btn carousel__btn--prev" type="button" aria-label="Previous slide">
         <span aria-hidden="true">‹</span>
       </button>
 
-      <!-- Slide viewport with track -->
       <div class="carousel__viewport">
         <ul class="carousel__track">
           <li class="carousel__slide">
-            <button class="carousel__card" type="button" data-full="/assets/img/carousel-1.svg">
+            <button class="carousel__card" type="button">
               <img src="/assets/img/carousel-1.svg" alt="Genome landscape overview">
-              <span class="carousel__overlay">
-                <span class="carousel__title">Genome landscape overview</span>
-              </span>
             </button>
           </li>
           <li class="carousel__slide">
-            <button class="carousel__card" type="button" data-full="/assets/img/carousel-2.svg">
+            <button class="carousel__card" type="button">
               <img src="/assets/img/carousel-2.svg" alt="Chromosome alignment flow">
-              <span class="carousel__overlay">
-                <span class="carousel__title">Chromosome alignment flow</span>
-              </span>
             </button>
           </li>
           <li class="carousel__slide">
-            <button class="carousel__card" type="button" data-full="/assets/img/carousel-3.svg">
+            <button class="carousel__card" type="button">
               <img src="/assets/img/carousel-3.svg" alt="Expression atlas gradient">
-              <span class="carousel__overlay">
-                <span class="carousel__title">Expression atlas gradient</span>
-              </span>
             </button>
           </li>
           <li class="carousel__slide">
-            <button class="carousel__card" type="button" data-full="/assets/img/carousel-4.svg">
+            <button class="carousel__card" type="button">
               <img src="/assets/img/carousel-4.svg" alt="Variant clustering map">
-              <span class="carousel__overlay">
-                <span class="carousel__title">Variant clustering map</span>
-              </span>
             </button>
           </li>
           <li class="carousel__slide">
-            <button class="carousel__card" type="button" data-full="/assets/img/carousel-5.svg">
+            <button class="carousel__card" type="button">
               <img src="/assets/img/carousel-5.svg" alt="Pathway interaction grid">
-              <span class="carousel__overlay">
-                <span class="carousel__title">Pathway interaction grid</span>
-              </span>
             </button>
           </li>
           <li class="carousel__slide">
-            <button class="carousel__card" type="button" data-full="/assets/img/carousel-6.svg">
+            <button class="carousel__card" type="button">
               <img src="/assets/img/carousel-6.svg" alt="RNA-seq signal weave">
-              <span class="carousel__overlay">
-                <span class="carousel__title">RNA-seq signal weave</span>
-              </span>
             </button>
           </li>
           <li class="carousel__slide">
-            <button class="carousel__card" type="button" data-full="/assets/img/carousel-7.svg">
+            <button class="carousel__card" type="button">
               <img src="/assets/img/carousel-7.svg" alt="Comparative genome panels">
-              <span class="carousel__overlay">
-                <span class="carousel__title">Comparative genome panels</span>
-              </span>
             </button>
           </li>
         </ul>
@@ -140,7 +111,6 @@ layout: none
       </button>
     </div>
 
-    <!-- Pagination dots -->
     <div class="carousel__dots" role="tablist" aria-label="Carousel pagination">
       <button class="carousel__dot" type="button" aria-label="Slide 1" data-slide="0"></button>
       <button class="carousel__dot" type="button" aria-label="Slide 2" data-slide="1"></button>
@@ -149,11 +119,6 @@ layout: none
       <button class="carousel__dot" type="button" aria-label="Slide 5" data-slide="4"></button>
       <button class="carousel__dot" type="button" aria-label="Slide 6" data-slide="5"></button>
       <button class="carousel__dot" type="button" aria-label="Slide 7" data-slide="6"></button>
-    </div>
-
-    <!-- Larger preview for the selected slide -->
-    <div class="carousel__preview" aria-live="polite">
-      <img src="/assets/img/carousel-1.svg" alt="Genome landscape overview (large preview)">
     </div>
   </div>
 </section>
@@ -166,15 +131,23 @@ layout: none
   const dots = Array.from(document.querySelectorAll(".carousel__dot"));
   const prevBtn = carousel.querySelector(".carousel__btn--prev");
   const nextBtn = carousel.querySelector(".carousel__btn--next");
-  const previewImage = document.querySelector(".carousel__preview img");
-
   // Track the currently visible slide.
   let currentIndex = 0;
+
+  const getSlideOffset = () => {
+    if (!slides.length) {
+      return 0;
+    }
+    const slideWidth = slides[0].getBoundingClientRect().width;
+    const gap = parseFloat(getComputedStyle(track).gap || 0);
+    return slideWidth + gap;
+  };
 
   // Update slide position, active dot, and wrap around edges.
   const updateCarousel = (index) => {
     currentIndex = (index + slides.length) % slides.length;
-    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    const offset = getSlideOffset();
+    track.style.transform = `translateX(-${currentIndex * offset}px)`;
     dots.forEach((dot, idx) => {
       dot.classList.toggle("is-active", idx === currentIndex);
     });
@@ -191,18 +164,12 @@ layout: none
     });
   });
 
-  // Update the large preview image when a slide card is clicked.
-  slides.forEach((slide) => {
-    const card = slide.querySelector(".carousel__card");
-    card.addEventListener("click", () => {
-      const title = card.querySelector("img").alt;
-      previewImage.src = card.dataset.full;
-      previewImage.alt = `${title} (large preview)`;
-    });
-  });
-
   // Initialize the carousel at the first slide.
   updateCarousel(0);
+
+  window.addEventListener("resize", () => {
+    updateCarousel(currentIndex);
+  });
 </script>
 
 </body>

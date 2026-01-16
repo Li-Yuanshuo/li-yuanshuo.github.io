@@ -224,6 +224,10 @@ body{
   transition: transform .5s ease;
 }
 
+.carousel__track.is-jumping{
+  transition: none;
+}
+
 /* Each slide spans a card width */
 .carousel__slide{
   min-width: clamp(210px, 22vw, 290px);
@@ -385,6 +389,10 @@ body{
 @media (max-width: 900px){
   .carousel{
     grid-template-columns: 1fr;
+  }
+
+  .carousel__viewport{
+    padding: 0 72px;
   }
 
   .carousel__btn{

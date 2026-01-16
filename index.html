@@ -180,8 +180,12 @@ layout: none
     }
     const slideWidth = slides[0].getBoundingClientRect().width;
     const gap = parseFloat(getComputedStyle(track).gap || 0);
+    const viewportStyles = getComputedStyle(viewport);
+    const paddingLeft = parseFloat(viewportStyles.paddingLeft || 0);
+    const paddingRight = parseFloat(viewportStyles.paddingRight || 0);
     const viewportWidth = viewport.getBoundingClientRect().width;
-    const centerOffset = (viewportWidth - slideWidth) / 2;
+    const contentWidth = viewportWidth - paddingLeft - paddingRight;
+    const centerOffset = (contentWidth - slideWidth) / 2;
     return { offset: slideWidth + gap, centerOffset };
   };
 

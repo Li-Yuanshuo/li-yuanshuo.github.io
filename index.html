@@ -153,11 +153,41 @@ layout: none
   const carousel = document.querySelector("[data-carousel]");
   if (carousel) {
     const track = carousel.querySelector(".carousel__track");
-    const slides = Array.from(track.querySelectorAll(".carousel__slide"));
-    slides.forEach((slide, index) => {
-      slide.dataset.index = index;
+    const originalSlides = Array.from(track.querySelectorAll(".carousel__slide"));
+    const slideCount = originalSlides.length;
+    const clonesBefore = 2;
+    const clonesAfter = 2;
+
+    /*
+      Track order after cloning:
+      [clone6][clone7] 1 2 3 4 5 6 7 [clone1][clone2]
+    */
+    originalSlides.forEach((slide, index) => {
+      slide.dataset.realIndex = index;
+      slide.dataset.isClone = "false";
     });
-    const slideCount = slides.length;
+
+    const createClone = (slide, realIndex) => {
+      const clone = slide.cloneNode(true);
+      clone.dataset.realIndex = realIndex;
+      clone.dataset.isClone = "true";
+      return clone;
+    };
+
+    const beforeClones = originalSlides
+      .slice(-clonesBefore)
+      .map((slide) => createClone(slide, Number(slide.dataset.realIndex)));
+    const afterClones = originalSlides
+      .slice(0, clonesAfter)
+      .map((slide) => createClone(slide, Number(slide.dataset.realIndex)));
+
+    beforeClones
+      .slice()
+      .reverse()
+      .forEach((clone) => track.prepend(clone));
+    afterClones.forEach((clone) => track.append(clone));
+
+    const slides = Array.from(track.querySelectorAll(".carousel__slide"));
     const dots = Array.from(document.querySelectorAll(".carousel__dot"));
     const prevBtn = carousel.querySelector(".carousel__btn--prev");
     const nextBtn = carousel.querySelector(".carousel__btn--next");
@@ -168,6 +198,7 @@ layout: none
     const previewHint = preview.querySelector(".carousel__preview-hint");
     const previewPlaceholder = preview.querySelector(".carousel__preview-placeholder");
     let currentIndex = 0;
+    let currentPos = clonesBefore;
 
     const normalizeIndex = (index) => (index + slideCount) % slideCount;
 
@@ -207,22 +238,7 @@ layout: none
       return { offset: slideWidth + gap, centerOffset };
     };
 
-    const updateCarousel = (index, { animate = true } = {}) => {
-      if (!slideCount) {
-        return;
-      }
-      currentIndex = normalizeIndex(index);
-      const { offset, centerOffset } = getSlideOffset();
-      const translateX = currentIndex * offset - centerOffset;
-      if (!animate) {
-        track.classList.add("is-jumping");
-      }
-      track.style.transform = `translateX(-${translateX}px)`;
-      if (!animate) {
-        requestAnimationFrame(() => {
-          track.classList.remove("is-jumping");
-        });
-      }
+    const updateDots = () => {
       dots.forEach((dot, idx) => {
         const isActive = idx === currentIndex;
         dot.classList.toggle("is-active", isActive);
@@ -234,8 +250,42 @@ layout: none
       });
     };
 
-    prevBtn.addEventListener("click", () => updateCarousel(currentIndex - 1));
-    nextBtn.addEventListener("click", () => updateCarousel(currentIndex + 1));
+    const updateTrackPosition = (position, { animate = true } = {}) => {
+      const { offset, centerOffset } = getSlideOffset();
+      const translateX = position * offset - centerOffset;
+      if (!animate) {
+        track.classList.add("is-jumping");
+      }
+      track.style.transform = `translateX(-${translateX}px)`;
+      if (!animate) {
+        requestAnimationFrame(() => {
+          track.classList.remove("is-jumping");
+        });
+      }
+    };
+
+    const updateCarousel = (index, { animate = true } = {}) => {
+      if (!slideCount) {
+        return;
+      }
+      currentIndex = normalizeIndex(index);
+      currentPos = clonesBefore + currentIndex;
+      updateTrackPosition(currentPos, { animate });
+      updateDots();
+    };
+
+    const moveCarousel = (direction) => {
+      if (!slideCount) {
+        return;
+      }
+      currentIndex = normalizeIndex(currentIndex + direction);
+      currentPos += direction;
+      updateTrackPosition(currentPos);
+      updateDots();
+    };
+
+    prevBtn.addEventListener("click", () => moveCarousel(-1));
+    nextBtn.addEventListener("click", () => moveCarousel(1));
 
     dots.forEach((dot) => {
       dot.addEventListener("click", () => {
@@ -248,13 +298,13 @@ layout: none
       if (!card) {
         return;
       }
-      const index = Number(slide.dataset.index);
+      const index = Number(slide.dataset.realIndex);
       if (Number.isNaN(index)) {
         return;
       }
       card.addEventListener("click", () => {
         updateCarousel(index);
-        updatePreview(slides[index]);
+        updatePreview(originalSlides[index]);
       });
     });
 
@@ -266,6 +316,18 @@ layout: none
       const newWindow = window.open(source, "_blank", "noopener");
       if (newWindow) {
         newWindow.opener = null;
+      }
+    });
+
+    track.addEventListener("transitionend", (event) => {
+      if (event.propertyName !== "transform") {
+        return;
+      }
+      const minPos = clonesBefore;
+      const maxPos = clonesBefore + slideCount - 1;
+      if (currentPos < minPos || currentPos > maxPos) {
+        currentPos = clonesBefore + currentIndex;
+        updateTrackPosition(currentPos, { animate: false });
       }
     });
 
@@ -298,9 +360,9 @@ layout: none
         return;
       }
       if (deltaX > 0) {
-        updateCarousel(currentIndex - 1);
+        moveCarousel(-1);
       } else {
-        updateCarousel(currentIndex + 1);
+        moveCarousel(1);
       }
     };
 
@@ -311,11 +373,11 @@ layout: none
     carousel.addEventListener("keydown", (event) => {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
-        updateCarousel(currentIndex - 1);
+        moveCarousel(-1);
       }
       if (event.key === "ArrowRight") {
         event.preventDefault();
-        updateCarousel(currentIndex + 1);
+        moveCarousel(1);
       }
     });
   }

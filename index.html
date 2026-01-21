@@ -49,7 +49,7 @@ layout: none
       </nav>
 
       <h1>Li Yuanshuo</h1>
-      <p class="intro__role">Genomic Data Researcher</p>
+      <p class="intro__role">Genomic Data Researcher & Visualization Analyst</p>
       <p>
         I am a genomic data researcher and analyst, focusing on comparative genomics and expression analysis. I design visualizations that transform large-scale biological data into intuitive and interpretable representations.
       </p>
@@ -223,8 +223,8 @@ layout: none
       const previewImage = preview.querySelector(".carousel__preview-image");
       const previewLink = preview.querySelector(".carousel__preview-link");
 
-      let currentIndex = 0;          // 0..6
-      let currentPos = clonesBefore; // includes clones
+      let currentIndex = 0;
+      let currentPos = clonesBefore;
 
       const normalizeIndex = (index) => (index + slideCount) % slideCount;
 
@@ -349,7 +349,6 @@ layout: none
         }
       });
 
-      // default: show slide 1 + its preview
       updateCarousel(0, { animate: false });
       updatePreview(originalSlides[0]);
 
@@ -357,7 +356,6 @@ layout: none
         updateCarousel(currentIndex, { animate: false });
       });
 
-      // Touch swipe
       let touchStartX = 0;
       let touchEndX = 0;
       const swipeThreshold = 50;
